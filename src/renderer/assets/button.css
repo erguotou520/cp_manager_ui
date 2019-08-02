@@ -1,0 +1,33 @@
+button[type] {
+  -webkit-appearance: none;
+  outline: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 120px;
+  height: 28px;
+  border-radius: 2px;
+  border: none;
+  color: #fff;
+  transition: all .3s ease-in-out;
+  cursor: pointer;
+  &[type=primary] {
+    background: var(--primaryColor);
+    &:hover {
+      background: var(--primaryColor1);
+    }
+    &:active,
+    &:focus {
+      box-shadow: 4px 4px 10px var(--primaryColor2);
+    }
+  }
+  &[disabled] {
+    background: var(--disabledBg);
+    cursor: default;
+    &:hover,
+    &:active,
+    &:focus {
+      background: var(--disabledBg);
+    }
+  }
+}

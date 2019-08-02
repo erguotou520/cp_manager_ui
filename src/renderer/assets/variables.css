@@ -1,0 +1,29 @@
+:root {
+  /* theme colors */
+  --primaryColor: rgb(24, 144, 255);
+  --primaryColor1: rgba(24, 144, 255, 0.8);
+  --primaryColor2: rgba(24, 144, 255, 0.6);
+  --dangerColor: rgb(233, 45, 45);
+  --dangerColor1: rgba(233, 45, 45, 0.8);
+  --dangerColor2: rgba(233, 45, 45, 0.6);
+  --disabledBg: #c3c3c3;
+  --inactiveBg: #a8a8a8;
+
+  /* text */
+  --textPrimary: var(--primaryColor);
+  --textDefault: #666;
+  --textMinor: #999;
+  --textGrey: #ccc;
+
+  /* bg */
+  --defaultBg: #fff;
+
+  /* border */
+  --borderColor: #e8e8e8;
+
+  /* dialog */
+  --dialogBg: var(--defaultBg);
+
+  /* mask */
+  --maskBg: rgba(0, 0, 0, 0.3);
+}

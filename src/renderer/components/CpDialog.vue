@@ -1,7 +1,8 @@
 <template>
   <transition name="dialog">
-    <div v-if="show" class="cp-dialog" :style="{'z-index':zIndex}">
-      <div class="dialog-wrapper" :style="computedStyle" ref="dialog">
+    <div v-if="show" class="cp-dialog"
+      :style="{'z-index':zIndex,'justify-content':middle ? 'center': 'flex-start'}">
+      <div class="dialog-wrapper" :style="{width}" ref="dialog">
         <header ref="header" v-if="showHeader" class="dialog-header" :class="[headerClass]">
           <div class="dialog-title">{{title}}</div>
           <div v-if="showClose" class="dialog-close" @click="close"></div>
@@ -9,6 +10,12 @@
         <section class="dialog-body" tabindex="-1" ref="body" :class="[bodyClass]" :style="{height}">
           <slot></slot>
         </section>
+        <footer v-if="showCancel||showOk||$slots.footer" class="dialog-footer">
+          <slot name="footer">
+            <cp-button type="normal" class="btn-cancel" @click="close">{{cancelText}}</cp-button>
+            <cp-button type="primary" class="btn-ok ml-16" @click="$emit('ok');close()">{{okText}}</cp-button>
+          </slot>
+        </footer>
       </div>
     </div>
   </transition>
@@ -66,7 +73,23 @@ export default {
       default: true
     },
     // 是否append到body
-    appendBody: Boolean
+    appendBody: Boolean,
+    showCancel: {
+      type: Boolean,
+      default: true
+    },
+    showOk: {
+      type: Boolean,
+      default: true
+    },
+    cancelText: {
+      type: String,
+      default: '取消'
+    },
+    okText: {
+      type: String,
+      default: '确定'
+    }
   },
   data () {
     return {
@@ -78,13 +101,13 @@ export default {
       show: false
     }
   },
-  computed: {
-    computedStyle () {
-      return {
-        width: this.width
-      }
-    }
-  },
+  // computed: {
+  //   computedStyle () {
+  //     return {
+  //       width: this.width
+  //     }
+  //   }
+  // },
   watch: {
     visible: {
       immediate: true,
@@ -94,8 +117,8 @@ export default {
           $modal.style.display = 'block'
           document.addEventListener('keydown', this.onKeydown, false)
           // 窗口大小改变
-          window.addEventListener('resize', this.setMiddle)
-          this.setMiddle()
+          // window.addEventListener('resize', this.setMiddle)
+          // this.setMiddle()
           modalStack.push(this.zIndex)
           this.$nextTick(() => {
             this.show = true
@@ -106,7 +129,7 @@ export default {
         } else if (!v && oldV) {
           this.removeStack()
           document.removeEventListener('keydown', this.onKeydown, false)
-          window.removeEventListener('resize', this.setMiddle)
+          // window.removeEventListener('resize', this.setMiddle)
           this.show = false
           this.$nextTick(() => {
             this.$emit('closed')
@@ -125,17 +148,17 @@ export default {
         $modal.style.display = 'none'
       }
     },
-    setMiddle () {
-      if (this.middle) {
-        this.$nextTick(() => {
-          if (this.$refs.dialog) {
-            const th = document.body.clientHeight
-            const eh = this.$refs.dialog.offsetHeight
-            this.mtop = `${(th - eh) / 2}px`
-          }
-        })
-      }
-    },
+    // setMiddle () {
+    //   if (this.middle) {
+    //     this.$nextTick(() => {
+    //       if (this.$refs.dialog) {
+    //         const th = document.body.clientHeight
+    //         const eh = this.$refs.dialog.offsetHeight
+    //         this.mtop = `${(th - eh) / 2}px`
+    //       }
+    //     })
+    //   }
+    // },
     onKeydown (e) {
       if (e.keyCode === 27) {
         if (this.zIndex === modalStack[modalStack.length - 1]) {
@@ -186,21 +209,22 @@ export default {
   position: fixed;
   left: 0;
   top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
   height: 100%;
   & .dialog-wrapper {
-    position: relative;
-    top: 50%;
-    left: 50%;
     display: flex;
     flex-direction: column;
+    margin: 24px 0;
     background: var(--dialogBg);
     border-radius: 3px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-50%) translateX(-50%);
   }
   & .dialog-header {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -250,6 +274,14 @@ export default {
     display: flex;
     flex-direction: column;
     padding: 16px;
+    max-height: 100%;
+    overflow: auto;
+  }
+  & .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 16px;
+    border-top: 1px solid var(--borderColor);
   }
 }
 .dialog-enter-active, .dialog-leave-active {

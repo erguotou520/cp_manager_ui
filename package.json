@@ -13,6 +13,8 @@
   "dependencies": {
     "core-js": "^2.6.5",
     "cp_core": "^0.0.3",
+    "fs-extra": "^8.1.0",
+    "uuid": "^3.3.2",
     "vtc": "^0.0.9",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
@@ -35,6 +37,7 @@
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "postcss-preset-env": "^6.7.0",
+    "svg-sprite-loader": "^4.1.6",
     "vue-cli-plugin-electron-builder": "^1.3.4",
     "vue-template-compiler": "^2.6.10"
   }

@@ -1,14 +1,14 @@
 .form-item {
   display: flex;
   align-items: center;
-  &[required] label {
+  &[required] > label:first-child {
     &::after {
       content: '*';
       font-size: 10px;
       color: var(--dangerColor1);
     }
   }
-  & label {
+  & > label:first-child {
     flex-shrink: 0;
   }
   & + .form-item {
@@ -18,4 +18,12 @@
 
 .w-80 {
   width: 80px;
+}
+
+.w-140 {
+  width: 140px;
+}
+
+.reverse {
+  transform: rotateX(180deg);
 }

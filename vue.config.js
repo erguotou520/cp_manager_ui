@@ -17,22 +17,17 @@ module.exports = {
     config.resolve.alias
       .set('@', path.resolve(__dirname, 'src/renderer'))
       .set('@shared', path.resolve(__dirname, 'src/shared'))
+    config.module.rules.delete('svg')
     config.module
-      .rule('svg')
-      .use('file-loader')
-      .loader('vue-svg-loader')
+      .rule('svg-sprite-loader')
+      .test(/\.svg$/)
+      .include
+      .add(path.resolve('src/renderer/assets/icons'))
+      .end()
+      .use('svg-sprite-loader')
+      .loader('svg-sprite-loader')
       .options({
-        svgo: {
-          plugins: [
-            { removeDoctype: true },
-            { removeXMLProcInst: true },
-            { removeComments: true },
-            { removeTitle: false },
-            { removeDesc: true },
-            { removeXMLNS: true },
-            { removeScriptElement: true }
-          ]
-        }
+        symbolId: 'icon-[name]'
       })
   },
   pluginOptions: {

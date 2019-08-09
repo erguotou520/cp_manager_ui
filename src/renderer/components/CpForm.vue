@@ -8,12 +8,17 @@ import Notify from './notify'
 export default {
   name: 'CpForm',
   methods: {
-    validate () {
+    validate (focus = true) {
       return Array.from(this.$el.querySelectorAll('input')).every(el => {
         if (el.checkValidity()) {
           return true
         }
         Notify(el.getAttribute('message') || 'Invalid data.')
+        if (focus) {
+          try {
+            el.focus()
+          } catch (e) {}
+        }
         return false
       })
     },

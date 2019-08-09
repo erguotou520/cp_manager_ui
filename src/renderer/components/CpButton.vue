@@ -23,21 +23,28 @@ export default {
 </script>
 <style lang="postcss">
 .cp-button {
-  position: relative;
   -webkit-appearance: none;
-  outline: none;
+  position: relative;
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  width: 120px;
+  outline: none;
+  width: 108px;
   height: 28px;
+  padding: 2px 6px;
   border-radius: 2px;
-  border: none;
-  color: #fff;
+  border: 1px solid var(--textGrey);
+  color: var(--textDefault);
   transition: all .3s ease-in-out;
   cursor: pointer;
+  &:hover {
+    color: var(--primaryColor);
+    border-color: var(--primaryColor);
+  }
   &[type=primary] {
     background: var(--primaryColor);
+    color: #fff;
+    border: none;
     &:hover {
       background: var(--primaryColor1);
     }

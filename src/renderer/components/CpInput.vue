@@ -6,42 +6,14 @@
     @keydown="onKeydown">
 </template>
 <script>
-import { isString } from 'vtc'
+import inputMixin from './input'
 export default {
   name: 'CpInput',
-  props: {
-    value: [String, Number],
-    trim: {
-      type: Boolean,
-      default: true
-    }
-  },
-  data () {
-    return {
-      invalid: false
-    }
-  },
-  computed: {
-    model: {
-      get () {
-        return this.trim && this.value && isString(this.value) ? this.value.trim() : this.value
-      },
-      set (v) {
-        this.$emit('input', v)
-      }
-    }
-  },
+  mixins: [inputMixin],
   methods: {
-    onInvalid () {
-      this.invalid = true
-      this.$emit('invalid')
-    },
     onKeydown (e) {
       this.invalid = false
       this.$emit('keydown')
-    },
-    checkValidity () {
-      return this.$el.checkValidity()
     }
   }
 }

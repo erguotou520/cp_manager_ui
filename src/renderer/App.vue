@@ -30,41 +30,4 @@ export default {
 <style lang="postcss">
 @import "~vtc/css/index.css";
 @import "./assets/index.css";
-body {
-  font-size: 13px;
-  color: #666;
-  -webkit-user-select: none;
-}
-#app {
-  width: 100vw;
-  height: 100vh;
-}
-.app-toolbar {
-  -webkit-app-region: drag;
-  height: 24px;
-  padding: 0 70px;
-}
-.scrolly-bar {
-  border-width: 3px;
-  &.axis-y {
-    width: 13px;
-  }
-}
-.w-140 {
-  width: 140px;
-}
-/* ::-webkit-scrollbar {
-  width: 3px;
-  height: 3px;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.4);
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.8);
-  }
-} */
-:focus {
-  outline: none;
-}
 </style>

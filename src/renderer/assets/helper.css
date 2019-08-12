@@ -27,3 +27,36 @@
 .reverse {
   transform: rotateX(180deg);
 }
+
+.action-button {
+  padding-top: 6px;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--textMinor);
+  & + .action-button {
+    margin-left: 12px;
+  }
+  &:hover {
+    color: var(--primaryColor);
+  }
+}
+.list-field {
+  border: 1px dashed var(--borderColor);
+  & + .list-field {
+    margin-top: 12px;
+  }
+}
+.field-tools {
+  width: 112px;
+  text-align: right;
+}
+.list-field-move {
+  transition: all .3s ease-in-out;
+}
+.list-field-enter,
+.list-field-leave-to {
+  opacity: 0;
+}
+.list-field-leave-active {
+  position: absolute;
+}

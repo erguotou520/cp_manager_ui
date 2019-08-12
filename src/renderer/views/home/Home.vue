@@ -1,14 +1,14 @@
 <template>
   <div class="v-home p-16 flex-column">
     <div class="flex ai-center mb-16">
-      <cp-button type="primary" @click="showService()">添加服务</cp-button>
+      <cp-button type="primary" @click="addService()">添加服务</cp-button>
       <cp-button class="ml-16" type="primary"
         :disabled="!selectedService"
         @click="showConfig()">添加配置</cp-button>
     </div>
     <div class="table flex flex-1 hide-y">
       <cp-empty v-if="!serviceStore.services.length" text="暂无服务，点击按钮开始添加">
-        <cp-button type="primary" class="mt-12" @click="showService()">添加服务</cp-button>
+        <cp-button type="primary" class="mt-12" @click="addService()">添加服务</cp-button>
       </cp-empty>
       <template v-else>
         <div class="left flex-column">
@@ -18,12 +18,12 @@
           <div class="table-body flex-column flex-1">
             <scrolly class="flex-column flex-1">
               <scrolly-viewport>
-                <div v-for="service in serviceStore.services" :key="service.uuid" class="row">
+                <div v-for="(service, index) in serviceStore.services" :key="service.uuid" class="row">
                   <act-label class="col" :class="{selected:selectedService===service}">
                     <div class="flex-1 t-trunc" @click="onSelectService(service)">{{service.name}}</div>
                     <template #tools>
-                      <cp-icon name="trash" title="删除" @click="removeService" />
-                      <cp-icon name="edit" @click="editService" />
+                      <cp-icon name="trash" title="删除" @mousedown.stop @click.stop="removeService(service, index)" />
+                      <cp-icon name="edit" @mousedown.stop @click.stop="editService(service, index)" />
                     </template>
                   </act-label>
                 </div>
@@ -59,8 +59,8 @@
         </cp-empty>
       </template>
     </div>
-    <service-form v-if="serviceVisible" :visible.sync="serviceVisible" />
-    <config-form v-if="configVisible" :visible.sync="configVisible" :service="selectedService" />
+    <service-form v-if="serviceVisible" :visible.sync="serviceVisible" :service="editingService" :index="editingServiceIndex" />
+    <config-form v-if="configVisible" :visible.sync="configVisible" :service="selectedService" :config="editingConfig" :index="editingConfigIndex" />
   </div>
 </template>
 
@@ -86,6 +86,10 @@ export default {
         { width: '120px' }
       ],
       selectedService: null,
+      editingService: null,
+      editingServiceIndex: -1,
+      editingConfig: null,
+      editingConfigIndex: -1,
       // services: [],
       onlyRunning: false,
       runningTasks: [1],
@@ -104,14 +108,21 @@ export default {
     onSelectService (service) {
       this.selectedService = service
     },
-    showService () {
+    addService () {
       this.serviceVisible = true
+      this.editingService = null
     },
-    editService () {
-
+    editService (service, index) {
+      this.serviceVisible = true
+      this.editingService = service
+      this.editingServiceIndex = index
     },
-    removeService () {
-
+    removeService (service, index) {
+      this.$confirm('警告', `确定要删除服务 '${service.name}' 么？删除该服务将删除该服务下所有配置，请仔细确认！`)
+        .then(() => {
+          serviceStore.removeService(index)
+        })
+        .catch(() => {})
     },
     showConfig () {
       this.configVisible = true
@@ -151,7 +162,7 @@ export default {
     display: flex;
     width: 100%;
     align-items: center;
-    padding: 0 7px;
+    padding: 0 16px 0 8px;
     border-right: 1px solid var(--colorCol);
     &:last-child {
       border-right: none;

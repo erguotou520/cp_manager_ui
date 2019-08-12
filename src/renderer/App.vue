@@ -4,16 +4,19 @@
     <div class="content flex-1 hide-y">
       <default-layout/>
     </div>
+    <w-confirm />
   </div>
 </template>
 
 <script>
 import { remote } from 'electron'
 import DefaultLayout from './layouts/Default.vue'
+import WConfirm from './widgets/WConfirm'
 
 export default {
   components: {
-    DefaultLayout
+    DefaultLayout,
+    WConfirm
   },
   mounted () {
     window.addEventListener('keydown', e => {

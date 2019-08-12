@@ -21,6 +21,7 @@
 
   /* border */
   --borderColor: #e8e8e8;
+  --borderLight: rgba(232, 232, 232, .75);
 
   /* dialog */
   --dialogBg: var(--defaultBg);

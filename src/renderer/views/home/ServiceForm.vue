@@ -20,8 +20,9 @@
       </div>
       <div v-else class="form-item">
         <label class="w-80">执行参数：</label>
-        <transition-group name="arg-list" tag="div" class="args flex-1">
-          <div v-for="(arg, argIndex) in form.args" :key="arg.uuid" class="flex arg p-8">
+        <transition-group name="list-field" tag="div" class="args flex-1">
+          <div v-for="(arg, argIndex) in form.args" :key="arg.uuid"
+            class="flex list-field p-8">
             <div class="flex-1">
               <div class="form-item" required>
                 <label class="w-80">参数键：</label>
@@ -34,6 +35,10 @@
                   <cp-checkbox v-model.trim="arg.enable">是否有值</cp-checkbox>
                 </div>
                 <template v-if="arg.enable">
+                  <div class="form-item">
+                    <label class="w-80">{{arg.origin === 'select' ? '必选' : '必填'}}？：</label>
+                    <cp-checkbox v-model="arg.required"/>
+                  </div>
                   <div class="form-item" required>
                     <label class="w-80">值来源：</label>
                     <cp-select v-model.trim="arg.origin" block required placeholder="必选">
@@ -81,16 +86,20 @@
                   </template>
                   <div class="form-item">
                     <label class="w-80">默认值：</label>
-                    <cp-input v-model.trim="arg.default" block
+                    <cp-input v-if="arg.origin === 'input'" v-model.trim="arg.default" block
                       :type="arg.type==='number' ? 'number' : 'text'"
                       :max="arg.type==='number' ? arg.max : null"
                       :min="arg.type==='number' ? arg.min : null"
                       placeholder="参数默认值" />
+                    <cp-select v-else-if="arg.origin === 'select'" v-model="arg.default" block placeholder="参数默认值">
+                      <option value="">未选择</option>
+                      <option v-for="item in arg.list" :key="item" :value="item">{{item}}</option>
+                    </cp-select>
                   </div>
                 </template>
               </div>
             </div>
-            <div class="arg-tools ml-12 mt-4 no-shrink">
+            <div class="field-tools ml-12 mt-4 no-shrink">
               <cp-icon v-if="argIndex===form.args.length - 1"
                 name="plus" title="新增"
                 width="20" height="20" @click="addArg" />
@@ -115,19 +124,27 @@
 </template>
 <script>
 import uuid from 'uuid'
+import { CPService } from 'cp_core'
+import { merge, clone } from 'vtc'
 import { serviceStore } from '@/store'
+
+function getForm () {
+  return {
+    name: '',
+    command: '',
+    args: []
+  }
+}
 
 export default {
   props: {
-    visible: Boolean
+    visible: Boolean,
+    service: CPService,
+    index: Number
   },
   data () {
     return {
-      form: {
-        name: '',
-        command: '',
-        args: []
-      },
+      form: getForm(),
       expands: []
     }
   },
@@ -135,7 +152,7 @@ export default {
     addArg () {
       if (this.$refs.form.validate()) {
         this.form.args.push(
-          { uuid: uuid.v4(), key: '', enable: true, origin: 'input', type: 'string', default: '', list: [null] }
+          { uuid: uuid.v4(), key: '', enable: true, required: false, origin: 'input', type: 'string', default: '', list: [null] }
         )
         this.expands.push(true)
         this.$nextTick(() => {
@@ -149,7 +166,7 @@ export default {
     },
     addItem (arg, argIndex) {
       if (arg.list.every(item => item !== '' && item !== null && item !== undefined)) {
-        arg.list.push('')
+        arg.list.push(null)
         this.$nextTick(() => {
           this.$refs[`item-${argIndex}`][arg.list.length - 1].$el.focus()
         })
@@ -173,50 +190,28 @@ export default {
     },
     save () {
       if (this.$refs.form.validate()) {
-        serviceStore.addService(this.form)
+        if (!this.service) {
+          serviceStore.addService(this.form)
+        } else {
+          serviceStore.updateService(this.index, this.form)
+        }
       }
     }
   },
-  mounted () {
-
+  created () {
+    if (this.service) {
+      const _serv = clone(this.service, true)
+      merge(this.form, _serv)
+    }
+  },
+  beforeDestroy () {
+    this.form = merge(this.form, getForm())
   }
 }
 </script>
 <style lang="postcss" scoped>
-.action-button {
-  padding-top: 6px;
-  font-size: 24px;
-  cursor: pointer;
-  color: var(--textMinor);
-  & + .action-button {
-    margin-left: 12px;
-  }
-  &:hover {
-    color: var(--primaryColor);
-  }
-}
-.arg {
-  border: 1px dashed var(--borderColor);
-  & + .arg {
-    margin-top: 12px;
-  }
-}
-.arg-tools {
-  width: 112px;
-  text-align: right;
-}
 .item-tools {
   width: 48px;
   text-align: right;
-}
-.arg-list-move {
-  transition: all .3s ease-in-out;
-}
-.arg-list-enter,
-.arg-list-leave-to {
-  opacity: 0;
-}
-.arg-list-leave-active {
-  position: absolute;
 }
 </style>

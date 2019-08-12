@@ -2,7 +2,7 @@
   <transition name="dialog">
     <div v-if="show" class="cp-dialog"
       :style="{'z-index':zIndex,'justify-content':middle ? 'center': 'flex-start'}">
-      <div class="dialog-wrapper" :style="{width}" ref="dialog">
+      <div class="dialog-wrapper" :style="{width,maxWidth}" ref="dialog">
         <header ref="header" v-if="showHeader" class="dialog-header" :class="[headerClass]">
           <div class="dialog-title">{{title}}</div>
           <div v-if="showClose" class="dialog-close" @click="close"></div>
@@ -49,6 +49,9 @@ export default {
     width: {
       type: String,
       default: '880px'
+    },
+    maxWidth: {
+      type: String
     },
     height: String,
     headerClass: String,
@@ -209,6 +212,7 @@ export default {
   position: fixed;
   left: 0;
   top: 0;
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -232,7 +236,7 @@ export default {
     height: 32px;
     width: 100%;
     font-size: 12px;
-    border-bottom: 1px solid var(--borderColor);
+    border-bottom: 1px solid var(--borderLight);
   }
   & .dialog-close {
     position: absolute;
@@ -273,7 +277,7 @@ export default {
   & .dialog-body {
     display: flex;
     flex-direction: column;
-    padding: 16px;
+    padding: 24px 16px;
     max-height: 100%;
     overflow: auto;
   }
@@ -281,7 +285,7 @@ export default {
     display: flex;
     justify-content: flex-end;
     padding: 8px 16px;
-    border-top: 1px solid var(--borderColor);
+    border-top: 1px solid var(--borderLight);
   }
 }
 .dialog-enter-active, .dialog-leave-active {

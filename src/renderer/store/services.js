@@ -15,6 +15,13 @@ const store = new Vue({
     addService (service) {
       const _serv = new CPService(service.name, service.command, service.args)
       ServiceManager.addService(_serv)
+    },
+    updateService (index, newService) {
+      const _serv = new CPService(newService.name, newService.command, newService.args)
+      ServiceManager.updateService(index, _serv)
+    },
+    removeService (index) {
+      ServiceManager.removeService(index)
     }
   },
   async created () {

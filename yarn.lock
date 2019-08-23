@@ -3278,10 +3278,10 @@ cosmiconfig@^5.0.0:
     js-yaml "^3.13.1"
     parse-json "^4.0.0"
 
-cp_core@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/cp_core/-/cp_core-0.0.4.tgz#cbd6e0d6e5e88cf58730cdc1b5cd95748323dc59"
-  integrity sha512-eErwI4PqzY1Sj/li1oSyN+DRzG/W/Ckb166QEENY8J3PZ6UdpDC1+8IB4uC05DsQkt3Hl1B5z0axoyIVh5710A==
+cp_core@^0.0.6:
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/cp_core/-/cp_core-0.0.6.tgz#8333ab51ec0dff9d80a4640ed92fb07a12b4faa7"
+  integrity sha512-OLPccDb6U3wi+KLL6kSmpRr7drIrjaehAiFGXAr2oVupCa5wY2FPIRxrOC7PBIh/LPD6GhQR+4JrkhfOSoBiDA==
   dependencies:
     tree-kill "^1.2.1"
     uuid "^3.3.2"

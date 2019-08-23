@@ -32,49 +32,49 @@
               <div class="mt-16" v-show="expands[argIndex]">
                 <div class="form-item" required>
                   <label class="w-80">参数值：</label>
-                  <cp-checkbox v-model.trim="arg.enable">是否有值</cp-checkbox>
+                  <cp-checkbox v-model.trim="arg.enable" @change="v=>onValueChange(arg, v)">是否有值</cp-checkbox>
                 </div>
-                <template v-if="arg.enable">
+                <template v-if="arg.value">
                   <div class="form-item">
-                    <label class="w-80">{{arg.origin === 'select' ? '必选' : '必填'}}？：</label>
-                    <cp-checkbox v-model="arg.required"/>
+                    <label class="w-80">{{arg.value.origin === 'select' ? '必选' : '必填'}}？：</label>
+                    <cp-checkbox v-model="arg.value.required"/>
                   </div>
                   <div class="form-item" required>
                     <label class="w-80">值来源：</label>
-                    <cp-select v-model.trim="arg.origin" block required placeholder="必选">
+                    <cp-select v-model.trim="arg.value.origin" block required placeholder="必选">
                       <option value="input">输入</option>
                       <option value="select">选择</option>
                     </cp-select>
                   </div>
                   <div class="form-item" required>
                     <label class="w-80">值类型：</label>
-                    <cp-select v-model.trim="arg.type" block required placeholder="必选">
+                    <cp-select v-model.trim="arg.value.type" block required placeholder="必选">
                       <option value="string">字符</option>
                       <option value="number">数字</option>
                     </cp-select>
                   </div>
-                  <template v-if="arg.type === 'number'&&arg.origin==='input'">
+                  <template v-if="arg.value.type === 'number'&&arg.value.origin==='input'">
                     <div class="form-item">
                       <label class="w-80">最大值：</label>
-                      <cp-input v-model.trim="arg.max" block type="number" placeholder="最大数值" />
+                      <cp-input v-model.trim="arg.value.max" block type="number" placeholder="最大数值" />
                     </div>
                     <div class="form-item">
                       <label class="w-80">最小值：</label>
-                      <cp-input v-model.trim="arg.min" block type="number" placeholder="最小数值" />
+                      <cp-input v-model.trim="arg.value.min" block type="number" placeholder="最小数值" />
                     </div>
                   </template>
-                  <template v-if="arg.origin === 'select'">
+                  <template v-if="arg.value.origin === 'select'">
                     <div class="form-item" required>
                       <label class="w-80">可选值：</label>
                       <div class="flex-1">
-                        <div v-for="(item, itemIndex) in arg.list" :key="itemIndex" class="flex ai-center"
+                        <div v-for="(item, itemIndex) in arg.value.list" :key="itemIndex" class="flex ai-center"
                           :class="{'mt-16':!!itemIndex}">
                           <cp-input :value="item" block :ref="`item-${argIndex}`"
                             @input="(v) => onInputItem(arg, itemIndex, v)"
-                            :type="arg.type==='number' ? 'number' : 'text'"
+                            :type="arg.value.type==='number' ? 'number' : 'text'"
                             required placeholder="添加可选值" message="可选值不能为空" />
                           <div class="item-tools ml-8 no-shrink">
-                            <cp-icon v-if="itemIndex === arg.list.length - 1"
+                            <cp-icon v-if="itemIndex === arg.value.list.length - 1"
                               name="plus" width="20" height="20"
                               @click="addItem(arg, argIndex)" />
                             <cp-icon class="ml-8" name="minus" width="20" height="20"
@@ -86,14 +86,14 @@
                   </template>
                   <div class="form-item">
                     <label class="w-80">默认值：</label>
-                    <cp-input v-if="arg.origin === 'input'" v-model.trim="arg.default" block
-                      :type="arg.type==='number' ? 'number' : 'text'"
-                      :max="arg.type==='number' ? arg.max : null"
-                      :min="arg.type==='number' ? arg.min : null"
+                    <cp-input v-if="arg.value.origin === 'input'" v-model.trim="arg.value.default" block
+                      :type="arg.value.type==='number' ? 'number' : 'text'"
+                      :max="arg.value.type==='number' ? arg.value.max : null"
+                      :min="arg.value.type==='number' ? arg.value.min : null"
                       placeholder="参数默认值" />
-                    <cp-select v-else-if="arg.origin === 'select'" v-model="arg.default" block placeholder="参数默认值">
+                    <cp-select v-else-if="arg.value.origin === 'select'" v-model="arg.value.default" block placeholder="参数默认值">
                       <option value="">未选择</option>
-                      <option v-for="item in arg.list" :key="item" :value="item">{{item}}</option>
+                      <option v-for="item in arg.value.list" :key="item" :value="item">{{item}}</option>
                     </cp-select>
                   </div>
                 </template>
@@ -152,7 +152,12 @@ export default {
     addArg () {
       if (this.$refs.form.validate()) {
         this.form.args.push(
-          { uuid: uuid.v4(), key: '', enable: true, required: false, origin: 'input', type: 'string', default: '', list: [null] }
+          {
+            uuid: uuid.v4(),
+            key: '',
+            enable: true,
+            value: { required: false, origin: 'input', type: 'string', default: '', list: [null] }
+          }
         )
         this.expands.push(true)
         this.$nextTick(() => {
@@ -160,25 +165,32 @@ export default {
         })
       }
     },
+    onValueChange (arg, enable) {
+      if (enable) {
+        arg.value = { required: false, origin: 'input', type: 'string', default: '', list: [null] }
+      } else {
+        arg.value = null
+      }
+    },
     removeArg (index) {
       this.form.args.splice(index, 1)
       this.expands.splice(index, 1)
     },
     addItem (arg, argIndex) {
-      if (arg.list.every(item => item !== '' && item !== null && item !== undefined)) {
-        arg.list.push(null)
+      if (arg.value.list.every(item => item !== '' && item !== null && item !== undefined)) {
+        arg.value.list.push(null)
         this.$nextTick(() => {
-          this.$refs[`item-${argIndex}`][arg.list.length - 1].$el.focus()
+          this.$refs[`item-${argIndex}`][arg.value.list.length - 1].$el.focus()
         })
       } else {
         this.$notify('请先填写空白项')
       }
     },
     removeItem (arg, index) {
-      arg.list.splice(index, 1)
+      arg.value.list.splice(index, 1)
     },
     onInputItem (arg, index, v) {
-      arg.list[index] = arg.type === 'number' ? +v : v
+      arg.value.list[index] = arg.value.type === 'number' ? +v : v
     },
     toggleExpand (argIndex) {
       this.$set(this.expands, argIndex, !this.expands[argIndex])
@@ -191,17 +203,29 @@ export default {
     save () {
       if (this.$refs.form.validate()) {
         if (!this.service) {
-          serviceStore.addService(this.form)
+          if (serviceStore.addService(this.form)) {
+            this.close()
+          } else {
+            this.$notify('添加失败，可能是存在相同的服务')
+          }
         } else {
-          serviceStore.updateService(this.index, this.form)
+          if (serviceStore.updateService(this.index, this.form)) {
+            this.close()
+          } else {
+            this.$notify('更新失败')
+          }
         }
       }
+    },
+    close () {
+      this.$emit('update:visible', false)
     }
   },
   created () {
     if (this.service) {
       const _serv = clone(this.service, true)
       merge(this.form, _serv)
+      this.expands = Array.from({ length: this.service.args.length }, () => false)
     }
   },
   beforeDestroy () {
@@ -210,6 +234,9 @@ export default {
 }
 </script>
 <style lang="postcss" scoped>
+.field-tools {
+  width: 112px;
+}
 .item-tools {
   width: 48px;
   text-align: right;

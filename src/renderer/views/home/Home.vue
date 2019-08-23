@@ -11,6 +11,7 @@
         <cp-button type="primary" class="mt-12" @click="addService()">添加服务</cp-button>
       </cp-empty>
       <template v-else>
+        <!-- 服务 -->
         <div class="left flex-column">
           <div class="row header">
             <div class="col">服务</div>
@@ -32,7 +33,24 @@
             </scrolly>
           </div>
         </div>
-        <div v-if="selectedService&&configs.length" class="right flex-column">
+        <!-- 分组 -->
+        <div v-if="selectedService && serviceConfigGroups.length" class="group flex-column">
+          <div class="row header">
+            <div class="col">分组</div>
+          </div>
+          <div class="table-body flex-column flex-1">
+            <scrolly class="flex-column flex-1">
+              <scrolly-viewport>
+                <div v-for="group in serviceConfigGroups" :key="group" class="row">
+                  <div class="col t-trunc" :class="{selected:selectedGroup===group}">{{group}}</div>
+                </div>
+              </scrolly-viewport>
+              <scrolly-bar axis="y" />
+            </scrolly>
+          </div>
+        </div>
+        <!-- 配置 -->
+        <div v-if="selectedService&&groupConfigs.length" class="right flex flex-column">
           <div class="row header">
             <div class="col" :style="style[0]">配置</div>
               <div class="col" :style="style[1]">状态</div>
@@ -42,8 +60,8 @@
           <div class="table-body flex-column flex-1">
             <scrolly class="flex-column flex-1">
               <scrolly-viewport>
-                <div v-for="config in selectedConfigs" :key="config.uuid" class="row">
-                  <div class="col" :style="style[0]">{{config.name}}</div>
+                <div v-for="config in groupConfigs" :key="config.uuid" class="row">
+                  <div class="col t-trunc" :style="style[0]">{{config.name}}</div>
                   <div class="col" :style="style[1]">状态</div>
                   <div class="col" :style="style[2]">PID</div>
                   <div class="col" :style="style[3]">操作</div>
@@ -65,7 +83,7 @@
 </template>
 
 <script>
-import { serviceStore } from '@/store'
+import { serviceStore, configStore } from '@/store'
 
 import ActLabel from './ActLabel'
 import ServiceForm from './ServiceForm'
@@ -86,27 +104,41 @@ export default {
         { width: '120px' }
       ],
       selectedService: null,
+      selectedGroup: null,
       editingService: null,
       editingServiceIndex: -1,
       editingConfig: null,
       editingConfigIndex: -1,
-      // services: [],
       onlyRunning: false,
       runningTasks: [1],
       serviceVisible: false,
       configVisible: false,
       serviceStore,
-      configs: []
+      configStore
     }
   },
   computed: {
-    selectedConfigs () {
-      return []
+    serviceConfigGroups () {
+      return this.serviceConfigs.reduce((groups, conf) => {
+        if (!groups.includes(conf.group)) {
+          groups.push(conf.group)
+        }
+        return groups
+      }, [])
+    },
+    serviceConfigs () {
+      if (!this.selectedService) return []
+      return configStore.getServiceConfigs(this.selectedService.uuid) || []
+    },
+    groupConfigs () {
+      if (!this.selectedGroup || !this.serviceConfigs.length) return []
+      return this.serviceConfigs.filter(conf => conf.group === this.selectedGroup)
     }
   },
   methods: {
     onSelectService (service) {
       this.selectedService = service
+      this.selectedGroup = this.serviceConfigGroups[0] || null
     },
     addService () {
       this.serviceVisible = true
@@ -143,11 +175,15 @@ export default {
     overflow-x: hidden;
   }
   & .left {
+    flex: 2;
+    border-right: 1px solid var(--colorTable);
+  }
+  & .group {
     flex: 1;
     border-right: 1px solid var(--colorTable);
   }
   & .right {
-    flex: 2;
+    flex: 5;
   }
   & .row {
     display: flex;

@@ -23,6 +23,7 @@ export default {
       this.detail = detail
       return new Promise((resolve, reject) => {
         this.callback = v => {
+          this.visible = false
           if (v) {
             resolve()
           } else {

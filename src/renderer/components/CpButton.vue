@@ -1,8 +1,10 @@
 <template>
   <button class="cp-button" :class="{clicked}" v-bind="$attrs"
-    @click="onClick"
-    @transitionend="clicked=false">
+    @click="onClick">
     <slot />
+    <transition name="clicked" @after-enter="clicked=false">
+      <span v-if="clicked" class="ripple"></span>
+    </transition>
   </button>
 </template>
 <script>
@@ -37,6 +39,7 @@ export default {
   color: var(--textDefault);
   transition: all .3s ease-in-out;
   cursor: pointer;
+  z-index: 2;
   &:hover {
     color: var(--primaryColor);
     border-color: var(--primaryColor);
@@ -48,17 +51,8 @@ export default {
     &:hover {
       background: var(--primaryColor1);
     }
-    &.clicked {
-      &::after {
-        /* content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        border: 6px solid var(--primaryColor2); */
-      }
-      /* box-shadow: 4px 4px 10px var(--primaryColor2); */
+    & .ripple {
+      background: var(--primaryColor);
     }
   }
   &[disabled] {
@@ -67,6 +61,24 @@ export default {
     &:hover,
     &.clicked {
       background: var(--disabledBg);
+    }
+  }
+  & .ripple {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    border-radius: 2px;
+    transform: scale3d(1.15, 1.4, 1);
+    z-index: -1;
+    &.clicked-enter-active {
+      transition: all .3s ease-in-out;
+    }
+    &.clicked-enter {
+      opacity: 0.6;
+      transform: scale(1);
     }
   }
 }

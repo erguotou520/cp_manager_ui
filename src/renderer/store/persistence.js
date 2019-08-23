@@ -6,6 +6,7 @@ import { promisify } from 'util'
 import { ServiceManager, ConfigManager } from 'cp_core'
 
 export const storePath = path.join(remote.app.getPath('userData'), 'data')
+console.log(storePath)
 ensureDirSync(storePath)
 const serviceFile = path.resolve(storePath, 'service.json')
 const configFile = path.resolve(storePath, 'config.json')

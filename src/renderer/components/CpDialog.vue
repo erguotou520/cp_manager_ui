@@ -13,7 +13,7 @@
         <footer v-if="showCancel||showOk||$slots.footer" class="dialog-footer">
           <slot name="footer">
             <cp-button type="normal" class="btn-cancel" @click="close">{{cancelText}}</cp-button>
-            <cp-button type="primary" class="btn-ok ml-16" @click="$emit('ok');close()">{{okText}}</cp-button>
+            <cp-button type="primary" class="btn-ok ml-16" @click="$emit('ok')">{{okText}}</cp-button>
           </slot>
         </footer>
       </div>
@@ -133,6 +133,10 @@ export default {
           this.removeStack()
           document.removeEventListener('keydown', this.onKeydown, false)
           // window.removeEventListener('resize', this.setMiddle)
+          if (this.beforeClose) {
+            this.beforeClose(this.doClose)
+          }
+          this.$emit('close')
           this.show = false
           this.$nextTick(() => {
             this.$emit('closed')
@@ -169,19 +173,11 @@ export default {
         }
       }
     },
-    doClose () {
-      this.$emit('close')
-      this.$emit('update:visible', false)
-    },
-    close () {
-      if (this.beforeClose) {
-        this.beforeClose(this.doClose)
-      } else {
-        this.doClose()
-      }
-    },
     nextIndex () {
       this.zIndex = nextIndex()
+    },
+    close () {
+      this.$emit('update:visible', false)
     }
   },
   mounted () {

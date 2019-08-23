@@ -12,10 +12,10 @@
   },
   "dependencies": {
     "core-js": "^2.6.5",
-    "cp_core": "^0.0.3",
+    "cp_core": "^0.0.6",
     "fs-extra": "^8.1.0",
     "uuid": "^3.3.2",
-    "vtc": "^0.0.9",
+    "vtc": "^0.0.10",
     "vue": "^2.6.10",
     "vue-router": "^3.0.3",
     "vue-scrolly": "^0.9.3",

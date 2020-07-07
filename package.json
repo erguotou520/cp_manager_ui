@@ -33,7 +33,7 @@
     "babel-plugin-syntax-jsx": "^6.18.0",
     "babel-plugin-transform-vue-jsx": "^3.7.0",
     "babel-preset-env": "^1.7.0",
-    "electron": "^5.0.0",
+    "electron": "^7.2.4",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "postcss-preset-env": "^6.7.0",
